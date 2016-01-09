@@ -35,7 +35,7 @@ var unwrap = (value) => {
 };
 
 var generateObject = jsc.generator.recursive(
-    jsc.generator.oneof([oneOf.generator]),
+    jsc.generator.oneof([oneOf.generator, boolean.generator]),
     function (gen) {
         return jsc.generator.dict(gen).map(wrap);
     }
