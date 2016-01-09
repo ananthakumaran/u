@@ -10,6 +10,10 @@ var oneOf = jsc.nearray(jsc.json).smap((array) => {
     return [['oneOf'].concat(array), array[r]];
 }, (x) => _.rest(x[0]));
 
+var boolean = jsc.bool.smap(bool => {
+    return [['boolean'], bool];
+}, ([spec, value]) => value);
+
 var wrap = (object) => {
     var spec = {}, sample = {};
     _.each(object, (value, key) => {
@@ -43,6 +47,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         var type = spec[0];
         switch (type) {
         case 'oneOf': return oneOf.shrink(value);
+        case 'boolean': return boolean.shrink(value);
         default: throw new Error(`Invalid type ${type}`);
         }
     } else {
