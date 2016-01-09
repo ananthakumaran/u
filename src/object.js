@@ -1,22 +1,20 @@
-import {startOfObject, concat, assertStartOfObject, isNone, none, notNone} from "./core";
+import {concat, isNone, none, notNone} from "./core";
 import _ from "lodash";
 import {register} from "./coder";
-import util from "util";
 
 export function object(entries) {
     return {
 	encode: function (object) {
-            return concat([{bits: startOfObject}].concat(
+            return concat(
                 _.flatten(_.map(entries, function (entry, key) {
 		    if (_.has(object, key)) {
 			return [{bits: notNone}, entry.encode(object[key])];
 		    }
                     return {bits: none};
-	        }))));
+	        })));
 	},
 	decode: function ({bits, blob}) {
 	    var object = {};
-            bits = assertStartOfObject(bits);
 	    _.each(entries, function (entry, key) {
 		if (isNone(bits)) {
 		    bits = bits.substr(1);

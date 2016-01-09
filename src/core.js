@@ -16,16 +16,8 @@ export function paddedBinary(value, bitSize) {
     return _.repeat('0', bitSize - binary.length) + binary;
 }
 
-export var startOfObject = paddedBinary(0, 2);
 export var notNone = paddedBinary(0, 1);
 export var none = paddedBinary(1, 1);
-
-export function assertStartOfObject(bits) {
-    if (bits && bits.length >= 2 && bits[0] === startOfObject[0] && bits[1] === startOfObject[1]) {
-        return bits.substr(2);
-    }
-    throw new Error("start of object marker missing");
-}
 
 export function isNone(bits) {
     return (bits && bits.length >= 1 && bits[0] === none[0]);
