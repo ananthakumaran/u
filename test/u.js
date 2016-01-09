@@ -34,10 +34,18 @@ var unwrap = (value) => {
     return result;
 };
 
+var wrapArray = (array) => {
+    return [['array'].concat(_.map(array, ([spec, value]) => spec)), _.map(array, ([spec, value]) => value)];
+};
+
+var unwrapArray = (wrapped) => {
+    return _.map(_.rest(wrapped[0]), (spec, i) => [spec, wrapped[1][i]]);
+};
+
 var generateObject = jsc.generator.recursive(
     jsc.generator.oneof([oneOf.generator, boolean.generator]),
     function (gen) {
-        return jsc.generator.dict(gen).map(wrap);
+        return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapArray)]);
     }
 );
 
@@ -48,6 +56,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         switch (type) {
         case 'oneOf': return oneOf.shrink(value);
         case 'boolean': return boolean.shrink(value);
+        case 'array': return jsc.shrink.nearray(shrinkObject)(unwrapArray(value)).map(wrapArray);
         default: throw new Error(`Invalid type ${type}`);
         }
     } else {
