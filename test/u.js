@@ -14,6 +14,10 @@ var boolean = jsc.bool.smap(bool => {
     return [['boolean'], bool];
 }, ([spec, value]) => value);
 
+var integer = jsc.integer.smap(n => {
+    return [['integer'], n];
+}, ([spec, value]) => value);
+
 var wrap = (object) => {
     var spec = {}, sample = {};
     _.each(object, (value, key) => {
@@ -43,7 +47,7 @@ var unwrapArray = (wrapped) => {
 };
 
 var generateObject = jsc.generator.recursive(
-    jsc.generator.oneof([oneOf.generator, boolean.generator]),
+    jsc.generator.oneof([oneOf.generator, boolean.generator, integer.generator]),
     function (gen) {
         return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapArray)]);
     }
@@ -57,6 +61,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         case 'oneOf': return oneOf.shrink(value);
         case 'boolean': return boolean.shrink(value);
         case 'array': return jsc.shrink.nearray(shrinkObject)(unwrapArray(value)).map(wrapArray);
+        case 'integer': return integer.shrink(value);
         default: throw new Error(`Invalid type ${type}`);
         }
     } else {
@@ -116,6 +121,7 @@ describe('u', () => {
     describe('primitives', () => {
         it('oneOf', validate(oneOf));
         it('boolean', validate(boolean));
+        it('number', validate(integer));
         it('object', validate(object));
 
         it('should handle unspecified keys', () => {
