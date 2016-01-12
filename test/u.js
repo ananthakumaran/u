@@ -22,6 +22,10 @@ var varchar = jsc.string.smap(x => {
     return [['varchar', x.length + jsc.random(0, 5)], x];
 }, ([spec, value]) => value);
 
+var fixedchar = jsc.string.smap(x => {
+    return [['fixedchar', x.length], x];
+}, ([spec, value]) => value);
+
 var wrap = (object) => {
     var spec = {}, sample = {};
     _.each(object, (value, key) => {
@@ -51,7 +55,7 @@ var unwrapArray = (wrapped) => {
 };
 
 var generateObject = jsc.generator.recursive(
-    jsc.generator.oneof([oneOf.generator, boolean.generator, integer.generator]),
+    jsc.generator.oneof([oneOf.generator, boolean.generator, integer.generator, varchar.generator, fixedchar.generator]),
     function (gen) {
         return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapArray)]);
     }
@@ -67,6 +71,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         case 'array': return jsc.shrink.nearray(shrinkObject)(unwrapArray(value)).map(wrapArray);
         case 'integer': return integer.shrink(value);
         case 'varchar': return varchar.shrink(value);
+        case 'fixedchar': return fixedchar.shrink(value);
         default: throw new Error(`Invalid type ${type}`);
         }
     } else {
@@ -128,6 +133,7 @@ describe('u', () => {
         it('boolean', validate(boolean));
         it('number', validate(integer));
         it('varchar', validate(varchar));
+        it('fixedchar', validate(fixedchar));
         it('object', validate(object));
 
         it('should handle unspecified keys', () => {

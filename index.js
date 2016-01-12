@@ -3,5 +3,6 @@ import "./src/oneOf";
 import "./src/boolean";
 import "./src/integer";
 import "./src/varchar";
+import "./src/fixedchar";
 import "./src/object";
 import "./src/array";
