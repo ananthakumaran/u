@@ -1,10 +1,10 @@
 import _ from "lodash";
 
 export function bitsRequired(maxValue) {
-    if (maxValue <= 1) {
+    if (maxValue === 0) {
         return 1;
     }
-    return Math.ceil(Math.log(maxValue) / Math.LN2);
+    return Math.floor(Math.log(maxValue) / Math.LN2) + 1;
 }
 
 export function paddedBinary(value, bitSize) {

@@ -18,6 +18,10 @@ var integer = jsc.integer.smap(n => {
     return [['integer'], n];
 }, ([spec, value]) => value);
 
+var varchar = jsc.string.smap(x => {
+    return [['varchar', x.length + jsc.random(0, 5)], x];
+}, ([spec, value]) => value);
+
 var wrap = (object) => {
     var spec = {}, sample = {};
     _.each(object, (value, key) => {
@@ -62,6 +66,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         case 'boolean': return boolean.shrink(value);
         case 'array': return jsc.shrink.nearray(shrinkObject)(unwrapArray(value)).map(wrapArray);
         case 'integer': return integer.shrink(value);
+        case 'varchar': return varchar.shrink(value);
         default: throw new Error(`Invalid type ${type}`);
         }
     } else {
@@ -122,6 +127,7 @@ describe('u', () => {
         it('oneOf', validate(oneOf));
         it('boolean', validate(boolean));
         it('number', validate(integer));
+        it('varchar', validate(varchar));
         it('object', validate(object));
 
         it('should handle unspecified keys', () => {

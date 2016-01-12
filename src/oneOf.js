@@ -2,7 +2,7 @@ import {paddedBinary, bitsRequired} from "./core";
 import {register} from "./coder";
 
 export default function oneOf(...choices) {
-    var bitSize = bitsRequired(choices.length);
+    var bitSize = bitsRequired(choices.length - 1);
     return {
         encode: function (choice) {
             var index = choices.indexOf(choice);
