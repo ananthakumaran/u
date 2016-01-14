@@ -12,15 +12,21 @@ export function encode(coder, object) {
     return coder.encodedVersion + paddedN(bits.length, 2) + bitsToN(bits) + blob;
 }
 
-export function decode(coder, string) {
+export function decode(coders, string) {
     var version = fromN(string.substr(0, 2)),
         bitSize = fromN(string.substr(2, 2));
+
+    var coder = _.findWhere(coders, {version: version});
+    if (!coder) {
+	throw new Error(`Invalid version: ${version}`);
+    }
 
     var bitCharSize = Math.ceil(bitSize / 6);
     var bits = nToBits(string.substr(4, bitCharSize), bitSize);
     var blob = string.substr(4 + bitCharSize);
     var result = coder.spec.decode({bits, blob});
-    return result.value;
+    var pendingMigrations = _.sortBy(_.filter(coders, coder => coder.version > version), 'version');
+    return _.reduce(pendingMigrations, (value, coder) => coder.migrate(value), result.value);
 }
 
 export function fromJson(version, jsonSpec, migrate) {

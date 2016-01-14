@@ -99,7 +99,7 @@ function validate(generator, debug) {
             var [spec, value] = x;
             var coder = fromJson(1, spec);
             var encoded = encode(coder, value);
-            var decoded = decode(coder, encoded);
+            var decoded = decode([coder], encoded);
             if (!_.isEqual(value, decoded)) {
                 console.log('spec ', spec);
                 console.log('value', util.inspect(value, {depth: null}));
@@ -115,7 +115,7 @@ function validateExample(spec, value) {
     return () => {
         var coder = fromJson(1, spec);
         var encoded = encode(coder, value);
-        var decoded = decode(coder, encoded);
+        var decoded = decode([coder], encoded);
         if (!_.isEqual(value, decoded)) {
             console.log('spec ', spec);
             console.log('value', util.inspect(value, {depth: null}));
@@ -162,5 +162,18 @@ describe('u', () => {
                 return _.isEqual(fromN(toN(n)), n);
             }));
         });
+    });
+
+    describe('version', function () {
+	it('picks the correct version', function () {
+	    var version1 = fromJson(1, {a: ['integer']}),
+		version2 = fromJson(2, {a: ['boolean']}),
+		version3 = fromJson(3, {d: ['fixedchar', 2]});
+
+	    var coders = [version1, version2, version3];
+	    assert.deepEqual(decode(coders, encode(version1, {a: 10})), {a: 10});
+	    assert.deepEqual(decode(coders, encode(version2, {a: true})), {a: true});
+	    assert.deepEqual(decode(coders, encode(version3, {d: 'he'})), {d: 'he'});
+	});
     });
 });
