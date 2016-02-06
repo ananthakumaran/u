@@ -8,7 +8,7 @@ import assert from "assert";
 var oneOf = jsc.nearray(jsc.json).smap((array) => {
     var r = jsc.random(0, array.length - 1);
     return [['oneOf'].concat(array), array[r]];
-}, (x) => _.rest(x[0]));
+}, (x) => _.tail(x[0]));
 
 var boolean = jsc.bool.smap(bool => {
     return [['boolean'], bool];
@@ -51,7 +51,7 @@ var wrapArray = (array) => {
 };
 
 var unwrapArray = (wrapped) => {
-    return _.map(_.rest(wrapped[0]), (spec, i) => [spec, wrapped[1][i]]);
+    return _.map(_.tail(wrapped[0]), (spec, i) => [spec, wrapped[1][i]]);
 };
 
 var generateObject = jsc.generator.recursive(

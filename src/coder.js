@@ -16,7 +16,7 @@ export function decode(coders, string) {
     var version = fromN(string.substr(0, 2)),
         bitSize = fromN(string.substr(2, 2));
 
-    var coder = _.findWhere(coders, {version: version});
+    var coder = _.find(coders, c => c.version === version);
     if (!coder) {
 	throw new Error(`Invalid version: ${version}`);
     }
@@ -34,13 +34,13 @@ export function fromJson(version, jsonSpec, migrate) {
 	if (_.isArray(spec)) {
 	    var method = spec[0];
 	    if (method === 'array') {
-		return availableTypes.array(_.map(_.rest(spec), loop));
+		return availableTypes.array(_.map(_.tail(spec), loop));
 	    } else {
-		return availableTypes[method].apply(null, _.rest(spec));
+		return availableTypes[method].apply(null, _.tail(spec));
 	    }
 	} else if (_.isObject(spec)) {
 	    var entries = _.keys(spec).sort();
-	    return availableTypes.object(_.object(_.map(entries, function (key) {
+	    return availableTypes.object(_.fromPairs(_.map(entries, function (key) {
                 return [key, loop(spec[key])];
 	    })));
 	}
