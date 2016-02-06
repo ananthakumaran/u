@@ -1,4 +1,4 @@
-import {fromJson, encode, decode} from "../index";
+import {fromJson, encode, decode} from "../src/u";
 import {nToBits, bitsToN, fromN, toN, paddedBinary} from "../src/core";
 import jsc from "jsverify";
 import _ from "lodash";
