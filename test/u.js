@@ -1,5 +1,5 @@
 import {fromJson, encode, decode} from "../src/u";
-import {nToBits, bitsToN, fromN, toN, paddedBinary} from "../src/core";
+import {nToBits, bitsToN, fromN, toN, paddedBinary, paddedN} from "../src/core";
 import jsc from "jsverify";
 import _ from "lodash";
 import util from "util";
@@ -158,6 +158,10 @@ describe('u', () => {
         });
 
         it('should encode decode numbers', () => {
+            assert.equal(fromN(toN(0)), 0);
+            assert.equal(fromN(toN(63)), 63);
+            assert.equal(fromN(toN(64)), 64);
+            assert.equal(fromN(toN(65)), 65);
             jsc.assert(jsc.forall('nat', (n) => {
                 return _.isEqual(fromN(toN(n)), n);
             }));

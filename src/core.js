@@ -38,7 +38,7 @@ export function toN(x) {
     }
 
     var result = '';
-    while (x > base) {
+    while (x >= base) {
         result = availableCharacters[x % base] + result;
         x = Math.floor(x / base);
     }
