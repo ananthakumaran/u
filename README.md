@@ -58,7 +58,7 @@ the value could be any javascript value.
 **boolean** - true and false  
 **fixedchar** - fixed length string. Size of the string is specified
 as the first arg.  
-**varchar** - variable length char. Maximum size of the string is
+**varchar** - variable length string. Maximum size of the string is
 specified as the first arg.  
 
 **migrate** - a function that will get called in case where you decode
