@@ -176,4 +176,37 @@ describe('u', () => {
 	    assert.deepEqual(decode(coders, encode(version3, {d: 'he'})), {d: 'he'});
 	});
     });
+
+    describe('example', () => {
+        it('works', () => {
+            // used in README
+            var spec = {
+                lookingFor: ['oneOf', 'bride', 'groom'],
+                age: ['array', ['integer'] /* min */, ['integer'] /* max */],
+                religion: ['oneOf', 'Hindu', 'Muslim', 'Christian', 'Sikh', 'Parsi', 'Jain', 'Buddhist', 'Jewish', 'No Religion', 'Spiritual', 'Other'],
+                motherTongue: ['oneOf', 'Assamese', 'Bengali', 'English', 'Gujarati', 'Hindi', 'Kannada', 'Konkani', 'Malayalam', 'Marathi', 'Marwari', 'Odia', 'Punjabi', 'Sindhi', 'Tamil', 'Telugu', 'Urdu'],
+                onlyProfileWithPhoto: ['boolean']
+            };
+
+            var v1 = fromJson(1, spec);
+
+            var encodedv1 = encode(v1, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
+            assert.equal(encodedv1, 'abaNc9I-aqa');
+            assert.deepEqual(decode([v1], encodedv1), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
+
+            var newSpec = _.extend({}, spec, {
+                maritialStatus: ['oneOf', "Doesn't Matter", 'Never Married', 'Divorced', 'Widowed', 'Awaiting Divorce', 'Annulled']
+            });
+
+            var v2 = fromJson(2, newSpec, function (old) {
+                old.maritialStatus = "Doesn't Matter";
+                return old;
+            });
+
+            assert.deepEqual(decode([v1, v2], encodedv1), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: "Doesn't Matter"});
+            var encodedv2 = encode(v2, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
+            assert.equal(encodedv2, 'acaRc9I-aHaa');
+            assert.deepEqual(decode([v1, v2], encodedv2), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
+        });
+    });
 });

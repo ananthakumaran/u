@@ -1,4 +1,4 @@
-export {fromJson, encode, decode} from "./coder";
+export {fromJson, encode, decode, register} from "./coder";
 import "./oneOf";
 import "./boolean";
 import "./integer";
