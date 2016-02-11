@@ -44,22 +44,20 @@ decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 
 **spec** - used to define the structure and domain of the data.
 
 *structure*  
-object is defined using { key: specForValue }  
+object is defined using { key: specForValue, ... }  
 array is defined using
 ['array', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
 
 *domain*  
 domain is defined using [domainName, arg1, arg2, ...]
 
-**oneOf** - can be considered similar to enum. The list of allowed
-values are specified as args. As we only encode the index position,
-the value could be any javascript value.  
-**integer** - any integer  
-**boolean** - true and false  
-**fixedchar** - fixed length string. Size of the string is specified
-as the first arg.  
-**varchar** - variable length string. Maximum size of the string is
-specified as the first arg.  
+| Domain | Args | Description |
+---------|------|-------------|
+| oneOf  | allowed values | can be considered similar to enum. As we only encode the index position, the value could be anything |
+| integer |     | any integer |
+| boolean |     | true or false |
+| fixedchar | Size of the string | fixed length string |
+| varchar | Maximum size of the string | variable length string |
 
 **migrate** - a function that will get called in case where you decode
 an object encoded using older spec. For example, there are three
@@ -74,5 +72,5 @@ value.
 
 ### decode(coders, blob)
 
-**coders** - array of coders.  
+**coders** - array of coder.  
 **blob** - the string that is returned by encode.  
