@@ -1,9 +1,17 @@
 # μ
 
+A JavaScript library for URL state management. Helps with defining an
+encoding for the URL, and helps with versioning of the encodings.
 
-A JavaScript library to compactly encode data such that the output can
-be used as a part of the URL.
+What does encoding mean? Here is a comparison for the JSON `{lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true}`, with and without `μ` encoding.
 
+Without encoding:
+`http://app.com/url#%7B%22lookingFor%22:%22bride%22,%22age%22:%5B25,30%5D,%22religion%22:%22Hindu%22,%22motherTongue%22:%22Bengali%22,%22onlyProfileWithPhoto%22:true%7D`
+
+With encoding:
+`http://app.com/url#abaNc9I-aqa`
+
+You do need to mention the spec for the encoding, see the examples below. `μ` also allows for versioning of the spec (again, check the examples below).
 
 ## Example
 
