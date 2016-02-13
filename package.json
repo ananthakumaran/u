@@ -4,7 +4,7 @@
   "description": "A library to compactly encode data which can be used in URL.",
   "main": "lib/u.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register",
+    "test": "./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
     "build": "babel src -d lib",
     "dist": "webpack lib/u.js dist/u.js --output-library u --output-library-target umd",
     "dist-min": "webpack lib/u.js dist/u.min.js -p --output-library u --output-library-target umd"
@@ -19,9 +19,10 @@
   "devDependencies": {
     "babel-cli": "^6.3.17",
     "babel-core": "^6.3.26",
+    "babel-plugin-lodash": "^2.0.1",
     "babel-preset-es2015": "^6.3.13",
     "jsverify": "^0.7.1",
-    "babel-plugin-lodash": "^2.0.1",
+    "mocha": "^2.4.5",
     "webpack": "^1.12.11"
   },
   "dependencies": {
