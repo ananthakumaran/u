@@ -1,32 +1,24 @@
 # μ
 
-A JavaScript library for URL state management. Helps with defining an
-encoding for the URL, and helps with versioning of the encodings.
-
-What does encoding mean? Here is a comparison for the JSON
-```javascript
-{
-    lookingFor: 'bride',
-    age: [25, 30],
-    religion: 'Hindu',
-    motherTongue: 'Bengali',
-    onlyProfileWithPhoto: true
-}
-```
-, with and without `μ` encoding.
-
-Without encoding:
+Without μ:
 `http://app.com/url#%7B%22lookingFor%22:%22bride%22,%22age%22:%5B25,30%5D,%22religion%22:%22Hindu%22,%22motherTongue%22:%22Bengali%22,%22onlyProfileWithPhoto%22:true%7D`
 
-With encoding:
+With μ:
 `http://app.com/url#abaNc9I-aqa`
 
-You do need to mention the spec for the encoding, see the examples below. `μ` also allows for versioning of the spec (again, check the examples below).
+μ is a JavaScript library for encoding/decoding state (JavaScript
+object) in URL. Define a spec for the state, based on which the
+encoding is done. Manage the state with versioning.
 
 ## Example
 
+Import the library
+
+`import {fromJson, encode, decode} from "u";`
+
+Define the spec.
+
 ```javascript
-import {fromJson, encode, decode} from "u";
 var spec = {
         lookingFor: ['oneOf', 'bride', 'groom'],
         age: ['array', ['integer'] /* min */, ['integer'] /* max */],
@@ -36,10 +28,20 @@ var spec = {
 };
 
 var v1 = fromJson(1, spec);
+```
+
+Encode the object/state.
+
+```javascript
 var encodedv1 = encode(v1, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
 //=> 'abaNc9I-aqa'
 decode([v1], encodedv1) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
+```
 
+Update your spec, as your application state space grows. Use versioning to
+encode/decode state.
+
+```javascript
 var newSpec = _.extend({}, spec, {
         maritialStatus: ['oneOf', "Doesn't Matter", 'Never Married', 'Divorced', 'Widowed', 'Awaiting Divorce', 'Annulled']
 });
