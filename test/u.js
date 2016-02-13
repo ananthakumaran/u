@@ -1,5 +1,5 @@
 import {fromJson, encode, decode} from "../src/u";
-import {nToBits, bitsToN, fromN, toN, paddedBinary, paddedN} from "../src/core";
+import {nToBits, bitsToN, fromN, toN, fromVarN, toVarN, paddedBinary, paddedN} from "../src/core";
 import jsc from "jsverify";
 import _ from "lodash";
 import util from "util";
@@ -166,6 +166,16 @@ describe('u', () => {
                 return _.isEqual(fromN(toN(n)), n);
             }));
         });
+
+        it('should encode decode numbers in variable length', () => {
+            assert.equal(fromVarN(toVarN(0))[0], 0);
+            assert.equal(fromVarN(toVarN(31))[0], 31);
+            assert.equal(fromVarN(toVarN(32))[0], 32);
+            assert.equal(fromVarN(toVarN(33))[0], 33);
+            jsc.assert(jsc.forall('nat', (n) => {
+                return _.isEqual(fromVarN(toVarN(n))[0], n);
+            }));
+        });
     });
 
     describe('version', function () {
@@ -195,7 +205,7 @@ describe('u', () => {
             var v1 = fromJson(1, spec);
 
             var encodedv1 = encode(v1, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
-            assert.equal(encodedv1, 'abaNc9I-aqa');
+            assert.equal(encodedv1, 'bHhc9I-aqa');
             assert.deepEqual(decode([v1], encodedv1), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
 
             var newSpec = _.extend({}, spec, {
@@ -209,7 +219,7 @@ describe('u', () => {
 
             assert.deepEqual(decode([v1, v2], encodedv1), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: "Doesn't Matter"});
             var encodedv2 = encode(v2, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
-            assert.equal(encodedv2, 'acaRc9I-aHaa');
+            assert.equal(encodedv2, 'cHlc9I-aHaa');
             assert.deepEqual(decode([v1, v2], encodedv2), {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
         });
     });

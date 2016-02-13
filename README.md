@@ -4,7 +4,7 @@ Without μ:
 `http://app.com/url#%7B%22lookingFor%22:%22bride%22,%22age%22:%5B25,30%5D,%22religion%22:%22Hindu%22,%22motherTongue%22:%22Bengali%22,%22onlyProfileWithPhoto%22:true%7D`
 
 With μ:
-`http://app.com/url#abaNc9I-aqa`
+`http://app.com/url#bHhc9I-aqa`
 
 μ is a JavaScript library for encoding/decoding state (JavaScript
 object) in URL. Define a spec for the state, based on which the
@@ -34,7 +34,7 @@ Encode the object/state.
 
 ```javascript
 var encodedv1 = encode(v1, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
-//=> 'abaNc9I-aqa'
+//=> 'bHhc9I-aqa'
 decode([v1], encodedv1) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
 ```
 
@@ -52,7 +52,7 @@ var v2 = fromJson(2, newSpec, function (old) {
 
 decode([v1, v2], encodedv1) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: "Doesn't Matter"});
 var encodedv2 = encode(v2, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
-//=> 'acaRc9I-aHaa'
+//=> 'cHlc9I-aHaa'
 decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
 ```
 

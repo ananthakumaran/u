@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {paddedN, bitsToN, nToBits, fromN} from "./core";
+import {bitsToN, nToBits, fromVarN, toVarN} from "./core";
 
 var availableTypes = {};
 
@@ -9,12 +9,13 @@ export function register(name, type) {
 
 export function encode(coder, object) {
     var {bits, blob} = coder.spec.encode(object);
-    return coder.encodedVersion + paddedN(bits.length, 2) + bitsToN(bits) + blob;
+    return coder.encodedVersion + toVarN(bits.length) + bitsToN(bits) + blob;
 }
 
 export function decode(coders, string) {
-    var version = fromN(string.substr(0, 2)),
-        bitSize = fromN(string.substr(2, 2));
+    var version, bitSize;
+    [version, string] = fromVarN(string);
+    [bitSize, string] = fromVarN(string);
 
     var coder = _.find(coders, c => c.version === version);
     if (!coder) {
@@ -22,8 +23,8 @@ export function decode(coders, string) {
     }
 
     var bitCharSize = Math.ceil(bitSize / 6);
-    var bits = nToBits(string.substr(4, bitCharSize), bitSize);
-    var blob = string.substr(4 + bitCharSize);
+    var bits = nToBits(string.substr(0, bitCharSize), bitSize);
+    var blob = string.substr(bitCharSize);
     var result = coder.spec.decode({bits, blob});
     var pendingMigrations = _.sortBy(_.filter(coders, coder => coder.version > version), 'version');
     return _.reduce(pendingMigrations, (value, coder) => coder.migrate(value), result.value);
@@ -50,7 +51,7 @@ export function fromJson(version, jsonSpec, migrate) {
 	version: version,
 	spec: loop(jsonSpec),
 	jsonSpec: jsonSpec,
-	encodedVersion: paddedN(version, 2),
+	encodedVersion: toVarN(version),
 	migrate: migrate || (x => x)
     };
 }

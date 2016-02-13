@@ -60,6 +60,37 @@ export function fromN(n) {
     return x;
 }
 
+export function fromVarN(string) {
+    var str = string;
+    var value = 0;
+    var hasMore = true;
+    while (hasMore) {
+        if (str.length === 0) {
+            throw new Error(`Invalid number: can't decode ${string}`);
+        }
+        var byte = str[0];
+        str = str.substr(1);
+        var n = fromN(byte);
+        hasMore = n > 31;
+        value = (value << 5) | (n & 31);
+    }
+    return [value, str];
+}
+
+export function toVarN(n) {
+    var result = '';
+    var charsRequired = Math.ceil(bitsRequired(n) / 5);
+    var bits = paddedBinary(n, charsRequired * 5);
+    while (bits) {
+        var part = bits.substr(0, 5);
+        bits = bits.substr(5);
+        part = (bits.length === 0 ? '0' : '1') + part;
+        result += bitsToN(part);
+    }
+    return result;
+}
+
+
 export function paddedN(x, charSize) {
     var r = toN(x);
     if (r.length > charSize) {
