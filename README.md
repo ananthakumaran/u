@@ -3,7 +3,17 @@
 A JavaScript library for URL state management. Helps with defining an
 encoding for the URL, and helps with versioning of the encodings.
 
-What does encoding mean? Here is a comparison for the JSON `{lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true}`, with and without `μ` encoding.
+What does encoding mean? Here is a comparison for the JSON
+```javascript
+{
+    lookingFor: 'bride',
+    age: [25, 30],
+    religion: 'Hindu',
+    motherTongue: 'Bengali',
+    onlyProfileWithPhoto: true
+}
+```
+, with and without `μ` encoding.
 
 Without encoding:
 `http://app.com/url#%7B%22lookingFor%22:%22bride%22,%22age%22:%5B25,30%5D,%22religion%22:%22Hindu%22,%22motherTongue%22:%22Bengali%22,%22onlyProfileWithPhoto%22:true%7D`
