@@ -1,4 +1,4 @@
-# μ
+# μ [![Build Status](https://travis-ci.org/ananthakumaran/u.svg?branch=master)](https://travis-ci.org/ananthakumaran/u)
 
 Without μ:
 `http://app.com/url#%7B%22lookingFor%22:%22bride%22,%22age%22:%5B25,30%5D,%22religion%22:%22Hindu%22,%22motherTongue%22:%22Bengali%22,%22onlyProfileWithPhoto%22:true%7D`
