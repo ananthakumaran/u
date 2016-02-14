@@ -217,8 +217,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function loop(spec) {
 	        if ((0, _isArray2.default)(spec)) {
 	            var method = spec[0];
-	            if (method === 'array') {
-	                return availableTypes.array((0, _map2.default)((0, _tail2.default)(spec), loop));
+	            if (method === 'tuple') {
+	                return availableTypes.tuple((0, _map2.default)((0, _tail2.default)(spec), loop));
 	            } else {
 	                return availableTypes[method].apply(null, (0, _tail2.default)(spec));
 	            }
@@ -5037,7 +5037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.array = array;
+	exports.tuple = tuple;
 
 	var _core = __webpack_require__(121);
 
@@ -5045,7 +5045,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function array(entries) {
+	function tuple(entries) {
 	    return {
 	        encode: function encode(array) {
 	            return (0, _core.concat)((0, _map2.default)(entries, function (entry, i) {
@@ -5064,7 +5064,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	}
 
-	(0, _coder.register)('array', array);
+	(0, _coder.register)('tuple', tuple);
 
 /***/ }
 /******/ ])

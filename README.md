@@ -21,7 +21,7 @@ Define the spec.
 ```javascript
 var spec = {
         lookingFor: ['oneOf', 'bride', 'groom'],
-        age: ['array', ['integer'] /* min */, ['integer'] /* max */],
+        age: ['tuple', ['integer'] /* min */, ['integer'] /* max */],
         religion: ['oneOf', 'Hindu', 'Muslim', 'Christian', 'Sikh', 'Parsi', 'Jain', 'Buddhist', 'Jewish', 'No Religion', 'Spiritual', 'Other'],
         motherTongue: ['oneOf', 'Assamese', 'Bengali', 'English', 'Gujarati', 'Hindi', 'Kannada', 'Konkani', 'Malayalam', 'Marathi', 'Marwari', 'Odia', 'Punjabi', 'Sindhi', 'Tamil', 'Telugu', 'Urdu'],
         onlyProfileWithPhoto: ['boolean']
@@ -65,8 +65,8 @@ decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 
 
 *structure*  
 object is defined using { key: specForValue, ... }  
-array is defined using
-['array', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
+tuple is defined using
+['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
 
 *domain*  
 domain is defined using [domainName, arg1, arg2, ...]

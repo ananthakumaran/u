@@ -2,7 +2,7 @@ import {concat} from "./core";
 import _ from "lodash";
 import {register} from "./coder";
 
-export function array(entries) {
+export function tuple(entries) {
     return {
         encode: function (array) {
             return concat(_.map(entries, (entry, i) => entry.encode(array[i])));
@@ -19,4 +19,4 @@ export function array(entries) {
     };
 }
 
-register('array', array);
+register('tuple', tuple);

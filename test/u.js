@@ -46,18 +46,18 @@ var unwrap = (value) => {
     return result;
 };
 
-var wrapArray = (array) => {
-    return [['array'].concat(_.map(array, ([spec, value]) => spec)), _.map(array, ([spec, value]) => value)];
+var wrapTuple = (array) => {
+    return [['tuple'].concat(_.map(array, ([spec, value]) => spec)), _.map(array, ([spec, value]) => value)];
 };
 
-var unwrapArray = (wrapped) => {
+var unwrapTuple = (wrapped) => {
     return _.map(_.tail(wrapped[0]), (spec, i) => [spec, wrapped[1][i]]);
 };
 
 var generateObject = jsc.generator.recursive(
     jsc.generator.oneof([oneOf.generator, boolean.generator, integer.generator, varchar.generator, fixedchar.generator]),
     function (gen) {
-        return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapArray)]);
+        return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapTuple)]);
     }
 );
 
@@ -68,7 +68,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         switch (type) {
         case 'oneOf': return oneOf.shrink(value);
         case 'boolean': return boolean.shrink(value);
-        case 'array': return jsc.shrink.nearray(shrinkObject)(unwrapArray(value)).map(wrapArray);
+        case 'tuple': return jsc.shrink.nearray(shrinkObject)(unwrapTuple(value)).map(wrapTuple);
         case 'integer': return integer.shrink(value);
         case 'varchar': return varchar.shrink(value);
         case 'fixedchar': return fixedchar.shrink(value);
@@ -196,7 +196,7 @@ describe('u', () => {
             // used in README
             var spec = {
                 lookingFor: ['oneOf', 'bride', 'groom'],
-                age: ['array', ['integer'] /* min */, ['integer'] /* max */],
+                age: ['tuple', ['integer'] /* min */, ['integer'] /* max */],
                 religion: ['oneOf', 'Hindu', 'Muslim', 'Christian', 'Sikh', 'Parsi', 'Jain', 'Buddhist', 'Jewish', 'No Religion', 'Spiritual', 'Other'],
                 motherTongue: ['oneOf', 'Assamese', 'Bengali', 'English', 'Gujarati', 'Hindi', 'Kannada', 'Konkani', 'Malayalam', 'Marathi', 'Marwari', 'Odia', 'Punjabi', 'Sindhi', 'Tamil', 'Telugu', 'Urdu'],
                 onlyProfileWithPhoto: ['boolean']

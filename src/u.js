@@ -5,4 +5,4 @@ import "./integer";
 import "./varchar";
 import "./fixedchar";
 import "./object";
-import "./array";
+import "./tuple";
