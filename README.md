@@ -65,8 +65,8 @@ decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 
 
 *structure*  
 object is defined using { key: specForValue, ... }  
-tuple is defined using
-['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
+array is defined using ['array', specForValue ]  
+tuple is defined using ['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
 
 *domain*  
 domain is defined using [domainName, arg1, arg2, ...]

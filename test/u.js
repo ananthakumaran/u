@@ -54,10 +54,18 @@ var unwrapTuple = (wrapped) => {
     return _.map(_.tail(wrapped[0]), (spec, i) => [spec, wrapped[1][i]]);
 };
 
+var wrapArray = ([spec, value]) => {
+    return [['array', spec], _.times(jsc.random(1, 20), _.constant(value))];
+};
+
+var unwrapArray = (wrapped) => {
+    return [wrapped[0][1], wrapped[1][0]];
+};
+
 var generateObject = jsc.generator.recursive(
     jsc.generator.oneof([oneOf.generator, boolean.generator, integer.generator, varchar.generator, fixedchar.generator]),
     function (gen) {
-        return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapTuple)]);
+        return jsc.generator.oneof([jsc.generator.dict(gen).map(wrap), jsc.generator.nearray(gen).map(wrapTuple), gen.map(wrapArray)]);
     }
 );
 
@@ -69,6 +77,7 @@ var shrinkObject = jsc.shrink.bless((value) => {
         case 'oneOf': return oneOf.shrink(value);
         case 'boolean': return boolean.shrink(value);
         case 'tuple': return jsc.shrink.nearray(shrinkObject)(unwrapTuple(value)).map(wrapTuple);
+        case 'array': return shrinkObject(unwrapArray(value)).map(wrapArray);
         case 'integer': return integer.shrink(value);
         case 'varchar': return varchar.shrink(value);
         case 'fixedchar': return fixedchar.shrink(value);
@@ -135,11 +144,18 @@ describe('u', () => {
         it('varchar', validate(varchar));
         it('fixedchar', validate(fixedchar));
         it('object', validate(object));
+        it('tuple', validateExample(['tuple', ['integer'], ['boolean']], [0, true]));
+        it('array', () => {
+            validateExample(['array', ['integer']], [0, 1, 3, 4])();
+            validateExample(['array', ['integer']], [])();
+            validateExample(['array', ['varchar']], ['aasdfas', 'asasasd', 'asdasd'])();
+            validateExample(['array', ['varchar']], ['', '', 'asdasd'])();
+        });
 
         it('should handle unspecified keys', () => {
             validateExample({'a': {'a': ['boolean']}}, {})();
-            validateExample({'a': {'a': ['boolean']}}, {a: {a: false}});
-            validateExample({'a': {'a': ['boolean'], 'b': ['boolean']}}, {a: {b: false}});
+            validateExample({'a': {'a': ['boolean']}}, {a: {a: false}})();
+            validateExample({'a': {'a': ['boolean'], 'b': ['boolean']}}, {a: {b: false}})();
         });
     });
 

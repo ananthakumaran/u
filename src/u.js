@@ -6,3 +6,4 @@ import "./varchar";
 import "./fixedchar";
 import "./object";
 import "./tuple";
+import "./array";
