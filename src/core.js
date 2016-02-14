@@ -101,18 +101,18 @@ export function paddedN(x, charSize) {
 }
 
 export function bitsToN(bits) {
-    if (bits === '') {
-        return '';
+    var result = '', char;
+    while (bits) {
+        char = bits.substr(0, 6);
+        bits = bits.substr(6);
+
+        if (char.length < 6) {
+            char += _.repeat('0', 6 - char.length);
+        }
+        result += toN(parseInt(char, 2));
     }
 
-    var char = bits.substr(0, 6);
-    bits = bits.substr(6);
-
-    if (char.length < 6) {
-        char += _.repeat(0, 6 - char.length);
-    }
-
-    return toN(parseInt(char, 2)) + bitsToN(bits);
+    return result;
 }
 
 export function nToBits(chars, bitSize) {
