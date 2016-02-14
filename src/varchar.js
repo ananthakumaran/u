@@ -1,17 +1,17 @@
-import {paddedBinary, bitsRequired} from "./core";
+import {fromVarN, toVarN} from "./core";
 import {register} from "./coder";
 
-export default function varchar(maxSize) {
-    var bitSize = bitsRequired(maxSize);
+export default function varchar() {
     return {
         encode: function (string) {
-            return {bits: paddedBinary(string.length, bitSize), blob: string};
+            return {bits: '', blob: toVarN(string.length) + string};
         },
         decode: function ({bits, blob}) {
-            var size = parseInt(bits.substr(0, bitSize), 2);
+            var size;
+            [size, blob] = fromVarN(blob);
             return {
                 value: blob.substr(0, size),
-                rest: { bits: bits.substr(bitSize), blob: blob.substr(size) }
+                rest: { bits, blob: blob.substr(size) }
             };
         }
     };

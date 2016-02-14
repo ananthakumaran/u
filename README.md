@@ -77,7 +77,7 @@ domain is defined using [domainName, arg1, arg2, ...]
 | integer |     | any integer |
 | boolean |     | true or false |
 | fixedchar | Size of the string | fixed length string |
-| varchar | Maximum size of the string | variable length string |
+| varchar | | variable length string |
 
 **migrate** - a function that will get called in case where you decode
 an object encoded using older spec. For example, there are three

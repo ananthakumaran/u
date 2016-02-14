@@ -19,7 +19,7 @@ var integer = jsc.integer.smap(n => {
 }, ([spec, value]) => value);
 
 var varchar = jsc.string.smap(x => {
-    return [['varchar', x.length + jsc.random(0, 5)], x];
+    return [['varchar'], x];
 }, ([spec, value]) => value);
 
 var fixedchar = jsc.string.smap(x => {
