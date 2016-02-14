@@ -1,5 +1,5 @@
 {
-  "name": "u",
+  "name": "u-node",
   "version": "0.0.1",
   "description": "A library to compactly encode data which can be used in URL.",
   "main": "lib/u.js",
