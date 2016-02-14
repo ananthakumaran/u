@@ -102,6 +102,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	__webpack_require__(135);
 
+	__webpack_require__(136);
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -219,6 +221,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var method = spec[0];
 	            if (method === 'tuple') {
 	                return availableTypes.tuple((0, _map2.default)((0, _tail2.default)(spec), loop));
+	            } else if (method === 'array') {
+	                return availableTypes.array(loop(spec[1]));
 	            } else {
 	                return availableTypes[method].apply(null, (0, _tail2.default)(spec));
 	            }
@@ -4529,18 +4533,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function bitsToN(bits) {
-	    if (bits === '') {
-	        return '';
+	    var result = '',
+	        char;
+	    while (bits) {
+	        char = bits.substr(0, 6);
+	        bits = bits.substr(6);
+
+	        if (char.length < 6) {
+	            char += (0, _repeat2.default)('0', 6 - char.length);
+	        }
+	        result += toN(parseInt(char, 2));
 	    }
 
-	    var char = bits.substr(0, 6);
-	    bits = bits.substr(6);
-
-	    if (char.length < 6) {
-	        char += (0, _repeat2.default)(0, 6 - char.length);
-	    }
-
-	    return toN(parseInt(char, 2)) + bitsToN(bits);
+	    return result;
 	}
 
 	function nToBits(chars, bitSize) {
@@ -4722,6 +4727,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
@@ -4731,20 +4738,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _coder = __webpack_require__(1);
 
-	function varchar(maxSize) {
-	    var bitSize = (0, _core.bitsRequired)(maxSize);
+	function varchar() {
 	    return {
 	        encode: function encode(string) {
-	            return { bits: (0, _core.paddedBinary)(string.length, bitSize), blob: string };
+	            return { bits: '', blob: (0, _core.toVarN)(string.length) + string };
 	        },
 	        decode: function decode(_ref) {
 	            var bits = _ref.bits;
 	            var blob = _ref.blob;
 
-	            var size = parseInt(bits.substr(0, bitSize), 2);
+	            var size;
+
+	            var _fromVarN = (0, _core.fromVarN)(blob);
+
+	            var _fromVarN2 = _slicedToArray(_fromVarN, 2);
+
+	            size = _fromVarN2[0];
+	            blob = _fromVarN2[1];
+
 	            return {
 	                value: blob.substr(0, size),
-	                rest: { bits: bits.substr(bitSize), blob: blob.substr(size) }
+	                rest: { bits: bits, blob: blob.substr(size) }
 	            };
 	        }
 	    };
@@ -5065,6 +5079,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	(0, _coder.register)('tuple', tuple);
+
+/***/ },
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _map = __webpack_require__(26);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.array = array;
+
+	var _core = __webpack_require__(121);
+
+	var _coder = __webpack_require__(1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function array(entry) {
+	    return {
+	        encode: function encode(array) {
+	            return (0, _core.concat)([{ blob: (0, _core.toVarN)(array.length) }].concat((0, _map2.default)(array, entry.encode)));
+	        },
+	        decode: function decode(_ref) {
+	            var bits = _ref.bits;
+	            var blob = _ref.blob;
+
+	            var size;
+
+	            var _fromVarN = (0, _core.fromVarN)(blob);
+
+	            var _fromVarN2 = _slicedToArray(_fromVarN, 2);
+
+	            size = _fromVarN2[0];
+	            blob = _fromVarN2[1];
+
+	            var rest = { bits: bits, blob: blob };
+	            var array = [],
+	                result,
+	                i;
+	            for (i = 0; i < size; i++) {
+	                result = entry.decode(rest);
+	                array[i] = result.value;
+	                rest = result.rest;
+	            }
+	            return { value: array, rest: rest };
+	        }
+	    };
+	}
+
+	(0, _coder.register)('array', array);
 
 /***/ }
 /******/ ])
