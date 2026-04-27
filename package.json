@@ -21,11 +21,8 @@
     "types": "./dist/u.d.ts",
     "scripts": {
         "build": "npm run clean && tsc",
-        "watch": "tsc --watch",
         "clean": "rm -rf ./dist/*",
-        "test": "node --test",
-        "publishd": "npm publish --dry-run",
-        "prepublishOnly": "npm run build"
+        "test": "npm run build && node --test"
     },
     "keywords": [
         "url",
