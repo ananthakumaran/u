@@ -1,6 +1,6 @@
 {
     "name": "u-node",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A library to compactly encode data which can be used in URL.",
     "type": "module",
     "files": [
