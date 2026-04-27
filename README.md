@@ -14,7 +14,7 @@ encoding is done. Manage the state with versioning.
 
 Import the library
 
-`import {fromJson, encode, decode} from "u";`
+`import {fromJson, encode, decode} from "u-node";`
 
 Define the spec.
 
@@ -60,15 +60,15 @@ decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 
 
 ### fromJson(version, spec, [migrate])
 
-**version** - spec version number  
+**version** - spec version number
 **spec** - used to define the structure and domain of the data.
 
-*structure*  
-object is defined using { key: specForValue, ... }  
-array is defined using ['array', specForValue ]  
-tuple is defined using ['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]  
+*structure*
+object is defined using { key: specForValue, ... }
+array is defined using ['array', specForValue ]
+tuple is defined using ['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]
 
-*domain*  
+*domain*
 domain is defined using [domainName, arg1, arg2, ...]
 
 | Domain | Args | Description |
@@ -87,10 +87,10 @@ value.
 
 ### encode(coder, object)
 
-**coder** - coder created using fromJson  
-**object** - object that needs to encoded  
+**coder** - coder created using fromJson
+**object** - object that needs to encoded
 
 ### decode(coders, blob)
 
-**coders** - array of coder.  
-**blob** - the string that is returned by encode.  
+**coders** - array of coder.
+**blob** - the string that is returned by encode.
