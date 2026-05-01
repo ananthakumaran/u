@@ -94,31 +94,30 @@ const v1 = fromJson(1, node, (a) => a, { node });
 
 ### fromJson(version, spec, [migrate], [definitions])
 
-**version** - spec version number
-**spec** - used to define the structure and domain of the data.
+- **version** - spec version number
+- **spec** - used to define the structure and domain of the data.
 
-**structure**
+  - **structure**
+    * object is defined using `{ key: specForValue, ... }`
+    * array is defined using `["array", specForValue]`
+    * tuple is defined using `["tuple", specForValueAtIndexZero, specForValueAtIndexOne, ...]`
 
-* object is defined using `{ key: specForValue, ... }`
-* array is defined using `["array", specForValue]`
-* tuple is defined using `["tuple", specForValueAtIndexZero, specForValueAtIndexOne, ...]`
+  - **domain**
+    domain is defined using `[domainName, arg1, arg2, ...]`
 
-**domain**
-domain is defined using `[domainName, arg1, arg2, ...]`
+    | Domain    | Args               | Description                             |
+    | --------- | ------------------ | --------------------------------------- |
+    | oneOf     | allowed values     | similar to enum; encodes index position |
+    | integer   |                    | any integer                             |
+    | float     |                    | any float                               |
+    | boolean   |                    | true or false                           |
+    | fixedchar | size of the string | fixed length string                     |
+    | varchar   |                    | variable length string                  |
 
-| Domain    | Args               | Description                             |
-| --------- | ------------------ | --------------------------------------- |
-| oneOf     | allowed values     | similar to enum; encodes index position |
-| integer   |                    | any integer                             |
-| float     |                    | any float                               |
-| boolean   |                    | true or false                           |
-| fixedchar | size of the string | fixed length string                     |
-| varchar   |                    | variable length string                  |
-
-**migrate** (optional) - called when decoding older versions. Each
+- **migrate** (optional) - called when decoding older versions. Each
 subsequent version’s migrate runs in sequence.
 
-**definitions** (optional) — object mapping names to specs for
+- **definitions** (optional) - object mapping names to specs for
 recursive structures. Reference via `["ref", name]`.
 
 ### encode(coder, object)
