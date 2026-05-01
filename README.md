@@ -14,57 +14,80 @@ encoding is done. Manage the state with versioning.
 
 Import the library
 
-`import {fromJson, encode, decode} from "u-node";`
+```javascript
+import { fromJson, encode, decode } from "u-node";
+```
 
 Define the spec.
 
 ```javascript
-var spec = {
-        lookingFor: ['oneOf', 'bride', 'groom'],
-        age: ['tuple', ['integer'] /* min */, ['integer'] /* max */],
-        religion: ['oneOf', 'Hindu', 'Muslim', 'Christian', 'Sikh', 'Parsi', 'Jain', 'Buddhist', 'Jewish', 'No Religion', 'Spiritual', 'Other'],
-        motherTongue: ['oneOf', 'Assamese', 'Bengali', 'English', 'Gujarati', 'Hindi', 'Kannada', 'Konkani', 'Malayalam', 'Marathi', 'Marwari', 'Odia', 'Punjabi', 'Sindhi', 'Tamil', 'Telugu', 'Urdu'],
-        onlyProfileWithPhoto: ['boolean']
+const spec = {
+  lookingFor: ["oneOf", "bride", "groom"],
+  age: ["tuple", ["integer"] /* min */, ["integer"] /* max */],
+  religion: ["oneOf", "Hindu", "Muslim", "Christian", "Sikh", "Parsi", "Jain", "Buddhist", "Jewish", "No Religion", "Spiritual", "Other" ],
+  motherTongue: ["oneOf", "Assamese", "Bengali", "English", "Gujarati", "Hindi", "Kannada", "Konkani", "Malayalam", "Marathi", "Marwari", "Odia", "Punjabi", "Sindhi", "Tamil", "Telugu", "Urdu"],
+  onlyProfileWithPhoto: ["boolean"],
 };
 
-var v1 = fromJson(1, spec);
+const v1 = fromJson(1, spec);
 ```
 
 Encode the object/state.
 
 ```javascript
-var encodedv1 = encode(v1, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
-//=> 'bHhc9I-aqa'
-decode([v1], encodedv1) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true});
+const encodedv1 = encode(v1, {
+  lookingFor: "bride",
+  age: [25, 30],
+  religion: "Hindu",
+  motherTongue: "Bengali",
+  onlyProfileWithPhoto: true,
+});
+// => 'bHhc9I-aqa'
+
+decode([v1], encodedv1);
+// => { lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true }
 ```
 
-Update your spec, as your application state space grows. Use versioning to
-encode/decode state.
+Update your spec as your application state space grows. Use versioning
+to encode/decode state.
 
 ```javascript
-var newSpec = _.extend({}, spec, {
-        maritialStatus: ['oneOf', "Doesn't Matter", 'Never Married', 'Divorced', 'Widowed', 'Awaiting Divorce', 'Annulled']
-});
-var v2 = fromJson(2, newSpec, function (old) {
-        old.maritialStatus = "Doesn't Matter";
-        return old;
+const newSpec = {
+  ...spec,
+  maritialStatus: ["oneOf", "Doesn't Matter", "Never Married", "Divorced", "Widowed", "Awaiting Divorce", "Annulled"],
+};
+
+const v2 = fromJson(2, newSpec, (old) => {
+  old.maritialStatus = "Doesn't Matter";
+  return old;
 });
 
-decode([v1, v2], encodedv1) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: "Doesn't Matter"});
-var encodedv2 = encode(v2, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
-//=> 'cHlc9I-aHaa'
-decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
+decode([v1, v2], encodedv1);
+// => { lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: "Doesn't Matter" }
+
+const encodedv2 = encode(v2, {
+  lookingFor: "bride",
+  age: [25, 30],
+  religion: "Hindu",
+  motherTongue: "Bengali",
+  onlyProfileWithPhoto: true,
+  maritialStatus: "Never Married",
+});
+// => 'cHlc9I-aHaa'
+
+decode([v1, v2], encodedv2);
+// => { lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married' }
 ```
 
 Recursive structure
 
 ```javascript
-var node = {
+const node = {
   name: ["varchar"],
   children: ["array", ["ref", "node"]],
 };
 
-var v1 = fromJson(1, node, (a) => a, { node: node });
+const v1 = fromJson(1, node, (a) => a, { node });
 ```
 
 ## API
@@ -74,40 +97,36 @@ var v1 = fromJson(1, node, (a) => a, { node: node });
 **version** - spec version number
 **spec** - used to define the structure and domain of the data.
 
-*structure*
-object is defined using { key: specForValue, ... }
-array is defined using ['array', specForValue ]
-tuple is defined using ['tuple', specForValueAtIndexZero, specForValueAtIndexOne, ...]
+**structure**
 
-*domain*
-domain is defined using [domainName, arg1, arg2, ...]
+* object is defined using `{ key: specForValue, ... }`
+* array is defined using `["array", specForValue]`
+* tuple is defined using `["tuple", specForValueAtIndexZero, specForValueAtIndexOne, ...]`
 
-| Domain | Args | Description |
----------|------|-------------|
-| oneOf  | allowed values | can be considered similar to enum. As we only encode the index position, the value could be anything |
-| integer |     | any integer |
-| float |     | any float |
-| boolean |     | true or false |
-| fixedchar | Size of the string | fixed length string |
-| varchar | | variable length string |
+**domain**
+domain is defined using `[domainName, arg1, arg2, ...]`
 
-**migrate** (optional) - a function that will get called in case where you decode
-an object encoded using older spec. For example, there are three
-versions v1, v2, v3 and you try to decode the string encoded using v1,
-then the migrate method in v2 and v3 will get called with the decoded
-value.
+| Domain    | Args               | Description                             |
+| --------- | ------------------ | --------------------------------------- |
+| oneOf     | allowed values     | similar to enum; encodes index position |
+| integer   |                    | any integer                             |
+| float     |                    | any float                               |
+| boolean   |                    | true or false                           |
+| fixedchar | size of the string | fixed length string                     |
+| varchar   |                    | variable length string                  |
 
-**definitions** (optional) — An object whose keys are definition names
-and whose values are specs. Definitions enable recursive
-structures. To reference a definition, use `["ref", name]` in place of
-the spec.
+**migrate** (optional) - called when decoding older versions. Each
+subsequent version’s migrate runs in sequence.
+
+**definitions** (optional) — object mapping names to specs for
+recursive structures. Reference via `["ref", name]`.
 
 ### encode(coder, object)
 
-**coder** - coder created using fromJson
-**object** - object that needs to encoded
+* **coder** - coder created using `fromJson`
+* **object** - object to encode
 
 ### decode(coders, blob)
 
-**coders** - array of coder.
-**blob** - the string that is returned by encode.
+* **coders** - array of coders
+* **blob** - encoded string returned by `encode`
