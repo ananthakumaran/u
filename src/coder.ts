@@ -26,7 +26,8 @@ import integer from "./integer.ts";
 import object from "./object.ts";
 import oneOf from "./oneOf.ts";
 import varchar from "./varchar.ts";
-import { tuple } from "./tuple.ts";
+import tuple from "./tuple.ts";
+import ref, { createRef, type Ref } from "./ref.ts";
 
 export const availableTypes = {
   array,
@@ -37,6 +38,7 @@ export const availableTypes = {
   oneOf,
   varchar,
   tuple,
+  ref,
 };
 
 export function encode(coder: JsonSpec, object: Record<string, any>) {
@@ -73,7 +75,18 @@ export function fromJson(
   version: number,
   jsonSpec: ObjectSpec,
   migrate: (old: any) => any,
+  definitions: Record<string, ObjectSpec>,
 ) {
+  const references: Record<string, Ref<Coder<any>>> = {};
+  definitions = definitions || {};
+  for (const [key, value] of Object.entries(definitions)) {
+    references[key] = createRef();
+  }
+
+  for (const [key, value] of Object.entries(definitions)) {
+    references[key]!.set(loop(value));
+  }
+
   function loop(spec: Spec): Coder<any> {
     if (isArray(spec)) {
       var method = spec[0];
@@ -81,6 +94,12 @@ export function fromJson(
         return availableTypes.tuple(map(tail(spec), loop));
       } else if (method === "array") {
         return availableTypes.array(loop(spec[1]));
+      } else if (method === "ref") {
+        const reference = references[spec[1]];
+        if (!reference) {
+          throw new Error(`Invalid reference name: ${spec}`);
+        }
+        return availableTypes.ref(reference);
       } else {
         return availableTypes[method].apply(null, tail(spec));
       }

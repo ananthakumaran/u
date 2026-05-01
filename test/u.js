@@ -194,6 +194,20 @@ function validateExample(spec, value) {
     };
 }
 
+function validateCoder(coder, value) {
+    return () => {
+        var encoded = encode(coder, value);
+        var decoded = decode([coder], encoded);
+        if (!_.isEqual(value, decoded)) {
+            console.log("value", util.inspect(value, { depth: null }));
+            console.log("encoded", encoded);
+            console.log("decoded", util.inspect(decoded, { depth: null }));
+        }
+
+        assert.deepEqual(value, decoded);
+    };
+}
+
 describe("u", () => {
     describe("primitives", () => {
         it("oneOf", validate(oneOf));
@@ -389,6 +403,22 @@ describe("u", () => {
                 motherTongue: "Bengali",
                 onlyProfileWithPhoto: true,
                 maritialStatus: "Never Married",
+            });
+        });
+    });
+
+    describe("reference", () => {
+        it("should handle recursive reference", () => {
+            var node = {
+                name: ["varchar"],
+                children: ["array", ["ref", "node"]],
+            };
+
+            const v1 = fromJson(1, node, (a) => a, { node: node });
+            validateCoder(v1, { name: "abc", children: [] });
+            validateCoder(v1, {
+                name: "abc",
+                children: [{ name: "d", children: [] }, { name: "e" }],
             });
         });
     });

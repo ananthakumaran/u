@@ -56,9 +56,20 @@ var encodedv2 = encode(v2, {lookingFor: 'bride', age: [25, 30], religion: 'Hindu
 decode([v1, v2], encodedv2) //=> {lookingFor: 'bride', age: [25, 30], religion: 'Hindu', motherTongue: 'Bengali', onlyProfileWithPhoto: true, maritialStatus: 'Never Married'});
 ```
 
+Recursive structure
+
+```javascript
+var node = {
+  name: ["varchar"],
+  children: ["array", ["ref", "node"]],
+};
+
+var v1 = fromJson(1, node, (a) => a, { node: node });
+```
+
 ## API
 
-### fromJson(version, spec, [migrate])
+### fromJson(version, spec, [migrate], [definitions])
 
 **version** - spec version number
 **spec** - used to define the structure and domain of the data.
@@ -79,11 +90,16 @@ domain is defined using [domainName, arg1, arg2, ...]
 | fixedchar | Size of the string | fixed length string |
 | varchar | | variable length string |
 
-**migrate** - a function that will get called in case where you decode
+**migrate** (optional) - a function that will get called in case where you decode
 an object encoded using older spec. For example, there are three
 versions v1, v2, v3 and you try to decode the string encoded using v1,
 then the migrate method in v2 and v3 will get called with the decoded
 value.
+
+**definitions** (optional) — An object whose keys are definition names
+and whose values are specs. Definitions enable recursive
+structures. To reference a definition, use `["ref", name]` in place of
+the spec.
 
 ### encode(coder, object)
 

@@ -17,6 +17,7 @@ type FixedCharSpec = ["fixedchar", number];
 type IntegerSpec = ["integer"];
 type VarCharSpec = ["varchar"];
 type TupleSpec = ["tuple", Spec, ...Spec[]];
+type RefSpec = ["ref", string];
 export type Spec =
   | ArraySpec
   | BooleanSpec
@@ -25,7 +26,8 @@ export type Spec =
   | { [key: string]: Spec }
   | OneOfSpec
   | VarCharSpec
-  | TupleSpec;
+  | TupleSpec
+  | RefSpec;
 export type ObjectSpec = { [key: string]: Spec };
 
 export function bitsRequired(maxValue: number) {
