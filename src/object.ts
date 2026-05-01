@@ -1,37 +1,35 @@
 import { concat, isNone, none, notNone, type Coder } from "./core.ts";
-import { each, flatten, has, map } from "lodash-es";
-
 export default function object<T>(
   entries: Record<string, Coder<T>>,
 ): Coder<Record<string, any>> {
   return {
     encode: function (object) {
       return concat(
-        flatten(
-          map(entries, function (entry, key) {
-            if (has(object, key)) {
+        Object.entries(entries)
+          .map(function ([key, entry]) {
+            if (Object.hasOwn(object, key)) {
               return [{ bits: notNone, blob: "" }, entry.encode(object[key])];
             }
             return { bits: none, blob: "" };
-          }),
-        ),
+          })
+          .flat(),
       );
     },
     decode: function ({ bits, blob }) {
-      var object: Record<string, any> = {};
-      each(entries, function (entry, key) {
+      const object: Record<string, any> = {};
+      for (const [key, entry] of Object.entries(entries)) {
         if (isNone(bits)) {
           bits = bits.substr(1);
-          return;
+          continue;
         } else {
           bits = bits.substr(1);
         }
 
-        var result = entry.decode({ bits, blob });
+        const result = entry.decode({ bits, blob });
         bits = result.rest.bits;
         blob = result.rest.blob;
         object[key] = result.value;
-      });
+      }
       return { value: object, rest: { bits, blob } };
     },
   };

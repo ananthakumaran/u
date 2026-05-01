@@ -1,5 +1,4 @@
-import { concat, type Coder } from "./core.ts";
-import { each } from "lodash-es";
+import { type Coder } from "./core.ts";
 
 export function createRef<T>(initial = null) {
   let value: T | null = initial;

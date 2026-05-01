@@ -10,7 +10,6 @@ import {
     fromVarN,
     toVarN,
     paddedBinary,
-    paddedN,
 } from "u-node/core";
 import jsc from "jsverify";
 import _ from "lodash-es";
@@ -28,35 +27,35 @@ var boolean = jsc.bool.smap(
     (bool) => {
         return [["boolean"], bool];
     },
-    ([spec, value]) => value,
+    ([, value]) => value,
 );
 
 var integer = jsc.integer.smap(
     (n) => {
         return [["integer"], n];
     },
-    ([spec, value]) => value,
+    ([, value]) => value,
 );
 
 var float = jsc.number.smap(
     (n) => {
         return [["float"], n];
     },
-    ([spec, value]) => value,
+    ([, value]) => value,
 );
 
 var varchar = jsc.string.smap(
     (x) => {
         return [["varchar"], x];
     },
-    ([spec, value]) => value,
+    ([, value]) => value,
 );
 
 var fixedchar = jsc.string.smap(
     (x) => {
         return [["fixedchar", x.length], x];
     },
-    ([spec, value]) => value,
+    ([, value]) => value,
 );
 
 var wrap = (object) => {
@@ -83,8 +82,8 @@ var unwrap = (value) => {
 
 var wrapTuple = (array) => {
     return [
-        ["tuple"].concat(_.map(array, ([spec, value]) => spec)),
-        _.map(array, ([spec, value]) => value),
+        ["tuple"].concat(_.map(array, ([spec]) => spec)),
+        _.map(array, ([, value]) => value),
     ];
 };
 
@@ -165,7 +164,7 @@ var object = jsc.bless({
     show: jsc.show,
 });
 
-function validate(generator, debug) {
+function validate(generator) {
     return function () {
         jsc.assert(
             jsc.forall(generator, (x) => {

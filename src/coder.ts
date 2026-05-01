@@ -1,16 +1,4 @@
 import {
-  filter,
-  find,
-  fromPairs,
-  isArray,
-  isObject,
-  keys,
-  map,
-  reduce,
-  sortBy,
-  tail,
-} from "lodash-es";
-import {
   bitsToN,
   nToBits,
   fromVarN,
@@ -44,7 +32,7 @@ export const availableTypes = {
 };
 
 export function encode(coder: JsonSpec, object: Record<string, any>) {
-  var { bits, blob } = coder.spec.encode(object);
+  const { bits, blob } = coder.spec.encode(object);
   return coder.encodedVersion + toVarN(bits.length) + bitsToN(bits) + blob;
 }
 
@@ -53,21 +41,20 @@ export function decode(coders: JsonSpec[], string: string) {
   [version, string] = fromVarN(string);
   [bitSize, string] = fromVarN(string);
 
-  var coder = find(coders, (c) => c.version === version);
+  const coder = coders.find((c) => c.version === version);
   if (!coder) {
     throw new Error(`Invalid version: ${version}`);
   }
 
-  var bitCharSize = Math.ceil(bitSize / 6);
-  var bits = nToBits(string.substr(0, bitCharSize), bitSize);
-  var blob = string.substr(bitCharSize);
-  var result = coder.spec.decode({ bits, blob });
-  var pendingMigrations = sortBy(
-    filter(coders, (coder) => coder.version > version),
-    "version",
-  );
-  return reduce(
-    pendingMigrations,
+  const bitCharSize = Math.ceil(bitSize / 6);
+  const bits = nToBits(string.substr(0, bitCharSize), bitSize);
+  const blob = string.substr(bitCharSize);
+  const result = coder.spec.decode({ bits, blob });
+  const pendingMigrations = coders
+    .filter((coder) => coder.version > version)
+    .sort((a, b) => a.version - b.version);
+
+  return pendingMigrations.reduce(
     (value, coder) => coder.migrate(value),
     result.value,
   );
@@ -81,7 +68,7 @@ export function fromJson(
 ) {
   const references: Record<string, Ref<Coder<any>>> = {};
   definitions = definitions || {};
-  for (const [key, value] of Object.entries(definitions)) {
+  for (const [key] of Object.entries(definitions)) {
     references[key] = createRef();
   }
 
@@ -90,10 +77,10 @@ export function fromJson(
   }
 
   function loop(spec: Spec): Coder<any> {
-    if (isArray(spec)) {
-      var method = spec[0];
+    if (Array.isArray(spec)) {
+      const method = spec[0];
       if (method === "tuple") {
-        return availableTypes.tuple(map(tail(spec), loop));
+        return availableTypes.tuple((spec.slice(1) as Spec[]).map(loop));
       } else if (method === "array") {
         return availableTypes.array(loop(spec[1]));
       } else if (method === "ref") {
@@ -103,16 +90,12 @@ export function fromJson(
         }
         return availableTypes.ref(reference);
       } else {
-        return availableTypes[method].apply(null, tail(spec));
+        return availableTypes[method].apply(null, spec.slice(1));
       }
-    } else if (isObject(spec)) {
-      var entries = keys(spec).sort();
+    } else if (typeof spec === "object") {
+      const entries = Object.keys(spec).sort();
       return availableTypes.object(
-        fromPairs(
-          map(entries, function (key) {
-            return [key, loop(spec[key]!)];
-          }),
-        ),
+        Object.fromEntries(entries.map((key) => [key, loop(spec[key]!)])),
       );
     }
     throw new Error(`Invalid spec: ${spec}`);

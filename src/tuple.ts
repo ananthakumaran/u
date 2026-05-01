@@ -1,5 +1,4 @@
 import { concat, type Coder } from "./core.ts";
-import { each } from "lodash-es";
 
 export default function tuple(entries: any[]): Coder<any[]> {
   return {
@@ -8,7 +7,7 @@ export default function tuple(entries: any[]): Coder<any[]> {
     },
     decode: function (rest) {
       const array: any[] = [];
-      each(entries, (entry, i) => {
+      entries.forEach((entry, i) => {
         const result = entry.decode(rest);
         array[i] = result.value;
         rest = result.rest;

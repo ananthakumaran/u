@@ -22,7 +22,9 @@
     "scripts": {
         "build": "npm run clean && tsc",
         "clean": "rm -rf ./dist/*",
-        "test": "npm run build && node --test"
+        "test": "npm run build && node --test",
+        "lint": "eslint \"{src,test}/**/*.{js,ts,tsx}\"",
+        "lint:fix": "eslint \"{src,test}/**/*.{js,ts,tsx}\" --fix"
     },
     "keywords": [
         "url",
@@ -36,15 +38,17 @@
     "author": "ananthakumaran <ananthakumaran@gmail.com>",
     "license": "MIT",
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@types/lodash-es": ">=4.10",
         "@types/mocha": "^10.0.6",
         "@types/node": "^24",
+        "eslint": "^10.3.0",
+        "globals": "^17.6.0",
         "jsverify": "^0.8.4",
         "mocha": "^10.4.0",
         "prettier": "3.8.3",
-        "typedoc": "^0.27.6"
-    },
-    "dependencies": {
+        "typedoc": "^0.27.6",
+        "typescript-eslint": "^8.59.1",
         "lodash-es": ">=4.10"
     },
     "engines": {
