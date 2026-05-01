@@ -86,6 +86,7 @@ domain is defined using [domainName, arg1, arg2, ...]
 ---------|------|-------------|
 | oneOf  | allowed values | can be considered similar to enum. As we only encode the index position, the value could be anything |
 | integer |     | any integer |
+| float |     | any float |
 | boolean |     | true or false |
 | fixedchar | Size of the string | fixed length string |
 | varchar | | variable length string |

@@ -38,6 +38,13 @@ var integer = jsc.integer.smap(
     ([spec, value]) => value,
 );
 
+var float = jsc.number.smap(
+    (n) => {
+        return [["float"], n];
+    },
+    ([spec, value]) => value,
+);
+
 var varchar = jsc.string.smap(
     (x) => {
         return [["varchar"], x];
@@ -98,6 +105,7 @@ var generateObject = jsc.generator.recursive(
         oneOf.generator,
         boolean.generator,
         integer.generator,
+        float.generator,
         varchar.generator,
         fixedchar.generator,
     ]),
@@ -127,6 +135,8 @@ var shrinkObject = jsc.shrink.bless((value) => {
                 return shrinkObject(unwrapArray(value)).map(wrapArray);
             case "integer":
                 return integer.shrink(value);
+            case "float":
+                return float.shrink(value);
             case "varchar":
                 return varchar.shrink(value);
             case "fixedchar":
@@ -213,6 +223,7 @@ describe("u", () => {
         it("oneOf", validate(oneOf));
         it("boolean", validate(boolean));
         it("number", validate(integer));
+        it("float", validate(float));
         it("varchar", validate(varchar));
         it("fixedchar", validate(fixedchar));
         it("object", validate(object));
@@ -222,6 +233,7 @@ describe("u", () => {
         );
         it("array", () => {
             validateExample(["array", ["integer"]], [0, 1, 3, 4])();
+            validateExample(["array", ["float"]], [0, 1.5, 3.33333333, 4])();
             validateExample(["array", ["integer"]], [])();
             validateExample(
                 ["array", ["varchar"]],

@@ -15,6 +15,7 @@ type BooleanSpec = ["boolean"];
 type OneOfSpec = ["oneOf", any, ...any[]];
 type FixedCharSpec = ["fixedchar", number];
 type IntegerSpec = ["integer"];
+type FloatSpec = ["float"];
 type VarCharSpec = ["varchar"];
 type TupleSpec = ["tuple", Spec, ...Spec[]];
 type RefSpec = ["ref", string];
@@ -23,6 +24,7 @@ export type Spec =
   | BooleanSpec
   | FixedCharSpec
   | IntegerSpec
+  | FloatSpec
   | { [key: string]: Spec }
   | OneOfSpec
   | VarCharSpec

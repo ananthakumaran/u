@@ -28,12 +28,14 @@ import oneOf from "./oneOf.ts";
 import varchar from "./varchar.ts";
 import tuple from "./tuple.ts";
 import ref, { createRef, type Ref } from "./ref.ts";
+import float from "./float.ts";
 
 export const availableTypes = {
   array,
   boolean,
   fixedchar,
   integer,
+  float,
   object,
   oneOf,
   varchar,
@@ -75,7 +77,7 @@ export function fromJson(
   version: number,
   jsonSpec: ObjectSpec,
   migrate: (old: any) => any,
-  definitions: Record<string, ObjectSpec>,
+  definitions: Record<string, Spec>,
 ) {
   const references: Record<string, Ref<Coder<any>>> = {};
   definitions = definitions || {};

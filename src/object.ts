@@ -1,6 +1,5 @@
 import { concat, isNone, none, notNone, type Coder } from "./core.ts";
 import { each, flatten, has, map } from "lodash-es";
-import { blob } from "stream/consumers";
 
 export default function object<T>(
   entries: Record<string, Coder<T>>,
